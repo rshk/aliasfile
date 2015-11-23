@@ -1,0 +1,11 @@
+# -*- mode: yaml -*-
+commands:
+  cmd1: echo foo bar {}
+  cmd2: echo "foo" bar={1} baz={0}
+  cmd3:
+    command: echo spam eggs "Hello, {env[USER]}" "Hi, {vars[VAR1]}"
+    vars:
+      VAR1: val1
+      VAR2: val2
+    env:
+      FOO: BAR
