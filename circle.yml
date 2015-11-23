@@ -1,0 +1,17 @@
+machine:
+  python:
+    version: 3.5.0
+
+dependencies:
+  override:
+    - python setup.py install
+    - pip install tox tox-pyenv flake8
+    - pyenv local 3.4.3 3.5.0
+
+test:
+  override:
+    - tox -e py34
+    - tox -e py35
+  post:
+    - flake8 aliasfile
+    - flake8 tests

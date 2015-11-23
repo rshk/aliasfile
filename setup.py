@@ -8,8 +8,12 @@ here = os.path.dirname(__file__)
 with open(os.path.join(here, 'README.rst')) as fp:
     longdesc = fp.read()
 
-with open(os.path.join(here, 'CHANGELOG.rst')) as fp:
-    longdesc += "\n\n" + fp.read()
+try:
+    with open(os.path.join(here, 'CHANGELOG.rst')) as fp:
+        longdesc += "\n\n" + fp.read()
+except OSError:
+    pass
+
 
 install_requires = [
     'click',
