@@ -9,3 +9,4 @@ commands:
       VAR2: val2
     env:
       FOO: BAR
+      CONFIGDIR: "{env[HOME]}/.config/something"
