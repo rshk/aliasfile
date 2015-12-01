@@ -18,7 +18,7 @@ def list_commands(config):
             .format(name, format_command(cmd.command)))
 
 
-@click.command()
+@click.command(context_settings=dict(allow_interspersed_args=False))
 @click.option('--config', 'config_filename', default='.aliases')
 @click.option('--list', 'action_list', is_flag=True, is_eager=True)
 @click.argument('args', nargs=-1)
