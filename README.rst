@@ -29,23 +29,25 @@ Command specification
     - positional arguments (``{}``, ``{1}``) -> variadic arguments to the command
     - ..or explicit: ``{args[1]}``
     - environment: ``{env[USER]}``
-    - vars (see below): ``{vars[USER]}``
     - extra arguments will be appended to the command
 
 - ``env``: environment for the command
 
-  - not considered in string formatting
-  - will go through the same formatting as commands
+  - replacements are applied on values, as with ``command``
 
-- ``vars``: to be replaced in env/command formatting
+- ``append_args``: boolean flag, indicating whether extra arguments on
+  the command line should be automatically appended to
+  ``command``. Defaults to ``True``; you might want to disable this if
+  applying arguments manually using string formatting.
 
 
 Notes
 =====
 
-- we want some way to prevent automatic appending of varargs
-- we might want to use jinja for formatting, so we can have conditionals / defaults
-- we might want inheritance, rather than having "nested" aliasing
+- we might want to use jinja for formatting, so we can have
+  conditionals / defaults
+- it would be nice to handle "chained" alisaing internally, rather
+  than doing multiple ``execvpe()`` calls
 
 
 Examples
@@ -55,7 +57,7 @@ Examples
 
     commands:
       test:
-        command: xvfb-run py.test --reuse-db -vvv ./tests/
+        command: py.test ./tests/
         env:
           DJANGO_SETTINGS_MODULE: fooproject.settings.testing
           PYTHONPATH: "{env[HOME]}/Projects/fooproject"
