@@ -9,31 +9,38 @@ def run_command(config, name, args=None, env=None):
     if args is None:
         args = []
 
-    if env is None:
-        env = os.environ
-
-    env = env.copy()  # We're going to update it
+    # Prepare base environment
+    base_env = (env if env is not None else os.environ).copy()
 
     cmd_spec = config.commands[name]
 
-    extra_env = {}
-    extra_env.update(config.env)
-    extra_env.update(cmd_spec.env)
-    env.update(extra_env)
+    # Prepare global environmnet
+    global_env = _apply_replacements_dict(
+        config.env, {'args': args, 'env': base_env})
 
-    run_args = []
-    run_args.extend(cmd_spec.command)
+    base_env.update(global_env)
 
-    run_args = _apply_replacements_list(run_args, {'args': args, 'env': env})
+    command_env = _apply_replacements_dict(
+        cmd_spec.env, {'args': args, 'env': base_env})
 
+    full_env = base_env.copy()
+    full_env.update(command_env)
+
+    run_args = _apply_replacements_list(
+        cmd_spec.command, {'args': args, 'env': full_env})
+
+    # No replacements applied on command-line arguments
     if cmd_spec.append_args:
         run_args.extend(args)
 
+    extra_env = {}
+    extra_env.update(global_env)
+    extra_env.update(command_env)
     click.echo('\x1b[1m>\x1b[0m {}'.format(format_command(run_args)))
     for key, value in sorted(extra_env.items()):
         click.echo('  {}'.format(format_envvar(key, value)))
 
-    os.execvpe(run_args[0], run_args, env)
+    os.execvpe(run_args[0], run_args, full_env)
 
 
 def _apply_replacements(text, context):
