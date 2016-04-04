@@ -36,9 +36,9 @@ def run_command(config, name, args=None, env=None):
     extra_env = {}
     extra_env.update(global_env)
     extra_env.update(command_env)
-    click.echo('\x1b[1m>\x1b[0m {}'.format(format_command(run_args)))
+    click.echo('\x1b[1m>\x1b[0m {}'.format(format_command(run_args)), err=True)
     for key, value in sorted(extra_env.items()):
-        click.echo('  {}'.format(format_envvar(key, value)))
+        click.echo('  {}'.format(format_envvar(key, value)), err=True)
 
     os.execvpe(run_args[0], run_args, full_env)
 
