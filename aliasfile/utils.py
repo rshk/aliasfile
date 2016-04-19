@@ -2,9 +2,13 @@
 """
 
 import io
+import logging
+import os
 import re
 
 import click
+
+logger = logging.getLogger(__name__)
 
 
 def print_command(args):
@@ -123,3 +127,29 @@ def highlight_command(text):
 def highlight_envvar(text):
     return highlight_replacements(
         text, C_NORMAL='\x1b[0;32m', C_BRACE='\x1b[0;33m')
+
+
+def search_config_file(filename, root=None):
+    if root is None:
+        root = os.getcwd()
+
+    # Prevent getting into loops
+    walked_through = set()
+
+    # Do not look in other devices
+    device = os.stat(root).st_dev
+
+    current = root
+    while True:
+        if (current in walked_through) or (os.stat(current).st_dev != device):
+            raise RuntimeError(
+                'Could not find {} configuration file in {} '
+                'or parents (stopping at filesystem boundary).'
+                .format(filename, root))
+
+        candidate = os.path.join(current, filename)
+        if os.path.exists(candidate):
+            return candidate
+
+        walked_through.add(candidate)
+        current = os.path.dirname(current)

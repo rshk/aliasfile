@@ -5,7 +5,7 @@ import yaml
 
 from .parse import parse_configuration
 from .runner import run_command
-from .utils import format_command
+from .utils import format_command, search_config_file
 
 
 def list_commands(config):
@@ -23,6 +23,9 @@ def list_commands(config):
 @click.option('--list', 'action_list', is_flag=True, is_eager=True)
 @click.argument('args', nargs=-1)
 def main(config_filename, args, action_list=False):
+
+    if not os.path.isabs(config_filename):
+        config_filename = search_config_file(config_filename)
 
     with open(config_filename, 'r') as fp:
         raw_config = yaml.load(fp)
